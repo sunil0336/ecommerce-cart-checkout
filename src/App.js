@@ -1,24 +1,63 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { CartProvider, useCart } from "./context/CartContext";
+
+import Products from "./pages/Products";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import OrderSummary from "./pages/OrderSummary";
+import OrderSuccess from "./pages/OrderSuccess";
+
+const AppContent = () => {
+  const { clearCart } = useCart();
+
+  const [step, setStep] = useState("products");
+  const [checkoutData, setCheckoutData] = useState(null);
+
+  // navigation controller
+  const goTo = (page) => setStep(page);
+
+  const handleCheckoutSubmit = (data) => {
+    setCheckoutData(data);
+    setStep("summary");
+  };
+
+  const handleConfirmOrder = (proofFile) => {
+    const formData = new FormData();
+    Object.entries(checkoutData).forEach(([k, v]) =>
+      formData.append(k, v)
+    );
+    if (proofFile) formData.append("deliveryProof", proofFile);
+
+    console.log("Order Data ->", [...formData.entries()]);
+
+    clearCart();
+    setStep("success");
+  };
+
+  if (step === "products") return <Products goTo={goTo} />;
+  if (step === "cart") return <Cart goTo={goTo} />;
+  if (step === "checkout")
+    return <Checkout onSubmit={handleCheckoutSubmit} />;
+
+  if (step === "summary")
+    return (
+      <OrderSummary
+        checkoutData={checkoutData}
+        onConfirm={handleConfirmOrder}
+      />
+    );
+
+  if (step === "success")
+    return <OrderSuccess onRestart={() => setStep("products")} />;
+
+  return null;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <CartProvider>
+      <AppContent />
+    </CartProvider>
   );
 }
 
