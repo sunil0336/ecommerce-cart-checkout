@@ -1,4 +1,5 @@
 import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
 
 const ProductCard = ({ product }) => {
   const { cart, addToCart } = useCart();
@@ -21,13 +22,15 @@ const ProductCard = ({ product }) => {
       <p className="text-gray-600">₹{product.price}</p>
 
       <button
-        onClick={() => addToCart(product)}
+        onClick={() => {
+          addToCart(product);
+          toast.success("Item added to cart");
+        }}
         disabled={isInCart}
-        className={`mt-3 w-full py-2 rounded-md transition ${
-          isInCart
+        className={`mt-3 w-full py-2 rounded-md transition ${isInCart
             ? "bg-green-500 text-white cursor-not-allowed"
             : "bg-blue-600 text-white hover:bg-blue-700"
-        }`}
+          }`}
       >
         {isInCart ? "Added ✔" : "Add to Cart"}
       </button>

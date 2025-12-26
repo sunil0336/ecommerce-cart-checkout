@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { CartProvider, useCart } from "./context/CartContext";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+
 
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
@@ -31,6 +34,7 @@ const AppContent = () => {
     console.log("Order Data ->", [...formData.entries()]);
 
     clearCart();
+    toast.success("Order placed successfully 🎉");
     setStep("success");
   };
 
@@ -56,6 +60,7 @@ const AppContent = () => {
 function App() {
   return (
     <CartProvider>
+      <Toaster position="top-right" />
       <AppContent />
     </CartProvider>
   );

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
 
 const TAX_RATE = 0.18;
 
@@ -8,7 +9,7 @@ const Cart = ({ goTo }) => {
   const [couponInput, setCouponInput] = useState("");
 
   const subtotal = useMemo(
-    () => cart.items.reduce((s,i)=>s+i.product.price*i.quantity,0),
+    () => cart.items.reduce((s, i) => s + i.product.price * i.quantity, 0),
     [cart.items]
   );
 
@@ -59,40 +60,44 @@ const Cart = ({ goTo }) => {
 
                 <div className="flex items-center justify-between mt-2">
 
-  {/* Quantity Controls */}
-  <div className="flex items-center gap-3">
+                  {/* Quantity Controls */}
+                  <div className="flex items-center gap-3">
 
-    <button
-      onClick={() =>
-        updateQuantity(item.product.id, Math.max(1, item.quantity - 1))
-      }
-      className="w-8 h-8 flex items-center justify-center border rounded bg-gray-100 hover:bg-gray-200"
-    >
-      −
-    </button>
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.product.id, Math.max(1, item.quantity - 1))
+                      }
+                      className="w-8 h-8 flex items-center justify-center border rounded bg-gray-100 hover:bg-gray-200"
+                    >
+                      −
+                    </button>
 
-    <span className="min-w-[28px] text-center font-semibold">
-      {item.quantity}
-    </span>
+                    <span className="min-w-[28px] text-center font-semibold">
+                      {item.quantity}
+                    </span>
 
-    <button
-      onClick={() =>
-        updateQuantity(item.product.id, item.quantity + 1)
-      }
-      className="w-8 h-8 flex items-center justify-center border rounded bg-gray-100 hover:bg-gray-200"
-    >
-      +
-    </button>
-  </div>
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.product.id, item.quantity + 1)
+                      }
+                      className="w-8 h-8 flex items-center justify-center border rounded bg-gray-100 hover:bg-gray-200"
+                    >
+                      +
+                    </button>
+                  </div>
 
-  {/* Remove Button */}
-  <button
-    onClick={() => removeFromCart(item.product.id)}
-    className="text-red-500 hover:underline"
-  >
-    Remove
-  </button>
-</div>
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => {
+                      removeFromCart(item.product.id);
+                      toast("Item removed", { icon: "🗑️" });
+                    }}
+
+                    className="text-red-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
 
 
               </div>
@@ -113,12 +118,16 @@ const Cart = ({ goTo }) => {
             type="text"
             placeholder="Enter coupon"
             value={couponInput}
-            onChange={(e)=>setCouponInput(e.target.value)}
+            onChange={(e) => setCouponInput(e.target.value)}
             className="w-full border rounded px-3 py-2"
           />
 
           <button
-            onClick={() => applyCoupon(couponInput)}
+            onClick={() => {
+              applyCoupon(couponInput);
+              toast.success("Coupon applied");
+            }}
+
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
             Apply Coupon
